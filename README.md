@@ -7,19 +7,41 @@ The site author also offers an Elixir version, which includes a little less
 data.
 [https://github.com/bcentinaro/tk-export](https://github.com/bcentinaro/tk-export)
 
-## Brief How to use
+## Installation and Setup
 
-- Copy `.env.example` to `.env`.
-- Add your user id number to the `TK_USER_ID=` line in `.env`.
-- Add your cookie to the `TK_COOKIE=` line in `.env`.
+1. Create a Python virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-$ `python tk-export.py`
+2. Install required dependencies:
+   ```bash
+   pip install requests python-dotenv
+   ```
 
+3. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
 
-## "Requirement"
+4. Configure your `.env` file:
+   - Add your user id number to the `TK_USER_ID=` line this can be found in the url of your user profile like tavern-keeper.com/user/1234 1234 would be your userid
+   - Add your cookie to the `TK_COOKIE=` line to find this go to developer tools -> application tab -> cookies on the left -> tavern-keeper at the bottom row. 
 
-This uses two common python modules. If you don't have- or don't want them, you
-can edit the script to avoid them.
+## Running the Script
+
+To run the export tool:
+```bash
+python tk-export.py
+```
+
+## Dependencies
+
+This script requires:
+- Python 3
+- requests
+- python-dotenv
 
 The `json` module is purely to pretty print the data.
 If you don't want to install python-json, simply change the single line:
