@@ -12,25 +12,33 @@ The site author also offers an Elixir version, which includes a little less data
 1. Make sure you have Python 3 installed on your system
    - On macOS, you can install Python 3 using Homebrew: `brew install python`
 2. Clone this repository
-3. Install the required dependencies:
+3. Create and activate a virtual environment:
    ```bash
-   # On macOS/Linux:
-   pip3 install -r requirements.txt
+   # Create a virtual environment
+   python3 -m venv venv
    
+   # Activate the virtual environment
+   # On macOS/Linux:
+   source venv/bin/activate
    # On Windows:
+   .\venv\Scripts\activate
+   ```
+4. Install the required dependencies:
+   ```bash
    pip install -r requirements.txt
    ```
 
 ## Usage
 
-1. Copy `.env.example` to `.env`
-2. Add your Tavern Keeper credentials to the `.env` file:
+1. Make sure your virtual environment is activated (you should see `(venv)` at the start of your command prompt)
+2. Copy `.env.example` to `.env`
+3. Add your Tavern Keeper credentials to the `.env` file:
    ```
    TK_USER_ID=your_user_id
    TK_COOKIE=your_cookie
    TK_done_campaigns=optional,comma,separated,list,of,campaign,ids
    ```
-3. Run the script:
+4. Run the script:
    ```bash
    python3 tk-export.py
    ```
@@ -43,7 +51,7 @@ This script uses two Python modules:
 - `requests`: For making HTTP requests to the Tavern Keeper API
 - `python-dotenv`: For loading credentials from the `.env` file
 
-These are automatically installed when you run `pip3 install -r requirements.txt` (or `pip install` on Windows).
+These are automatically installed when you run `pip install -r requirements.txt` in your virtual environment.
 
 ## Getting Your Credentials
 
