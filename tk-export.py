@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import requests
 from datetime import datetime
@@ -6,6 +6,7 @@ from time import sleep
 import os
 from sys import exit
 import json
+from typing import Dict, List, Tuple, Optional, Any
 
 export_dir = 'exported-data' ## Saved files end up here. Reletive to script.
 sleep_delay = 0.5 ## seconds between request, to be polite to the site.
@@ -13,7 +14,16 @@ sleep_delay = 0.5 ## seconds between request, to be polite to the site.
 host='https://www.tavern-keeper.com'
 headers = { 'accept': 'application/json', 'X-CSRF-Token': 'something', }
 
-def load_settings():
+def load_settings() -> Tuple[str, Dict[str, str], Optional[List[str]]]:
+    """
+    Load settings from environment variables using python-dotenv.
+    
+    Returns:
+        Tuple containing:
+        - User ID
+        - Cookies dictionary
+        - List of completed campaigns (if any)
+    """
     import dotenv
     dotenv.load_dotenv()
 
@@ -38,14 +48,30 @@ def load_settings():
 
 uid, cookies, done_campaigns = load_settings()
 
-def merge(old, new):
+def merge(old: Dict[str, Any], new: Dict[str, Any]) -> None:
+    """
+    Merge two dictionaries, handling lists appropriately.
+    
+    Args:
+        old: The dictionary to merge into
+        new: The dictionary to merge from
+    """
     for key, value in new.items():
-        if type(value) is list and key in old and type(old[key]) is list:
+        if isinstance(value, list) and key in old and isinstance(old[key], list):
             old[key].extend(value)
         else:
             old[key] = value
 
-def pull(req):
+def pull(req: str) -> Dict[str, Any]:
+    """
+    Make a GET request to the Tavern Keeper API and handle pagination.
+    
+    Args:
+        req: The API endpoint to request
+        
+    Returns:
+        Dictionary containing the API response data
+    """
     sleep(sleep_delay)
     url = host+req
     print(f'GET: {url}')
@@ -74,19 +100,36 @@ for bracket in '[{<':
 for bracket in ']}>':
     transTable.update({ bracket: ')' })
 transTable = str.maketrans(transTable)
-def sanitise(name):
+def sanitise(name: str) -> str:
+    """
+    Make filenames safer by replacing special characters.
+    
+    Args:
+        name: The string to sanitize
+        
+    Returns:
+        Sanitized string safe for use as a filename
+    """
     name = name.strip()
     name = name.translate(transTable)
     return ''.join([char if char.isalnum() or char in '-_,.!?()"\'…—' else '_' for char in name])
 
-def write(data, dir, name, date):
+def write(data: Dict[str, Any], dir: str, name: str, date: datetime) -> None:
+    """
+    Write data to a JSON file with proper timestamp.
+    
+    Args:
+        data: The data to write
+        dir: Directory to write to
+        name: Name of the file
+        date: Timestamp to use for the file
+    """
     filename = sanitise(name)
     dir = f'{export_dir}/{dir}'
-    # dir = sanitise(dir)
 
     timestamp = date.timestamp()
-    date = date.strftime('%Y%m%d%H%M')
-    path = os.path.join(dir, f'{date}.{filename}.json')
+    date_str = date.strftime('%Y%m%d%H%M')
+    path = os.path.join(dir, f'{date_str}.{filename}.json')
     print(f'Writing to {path}')
 
     if not os.path.exists(dir):
@@ -97,9 +140,9 @@ def write(data, dir, name, date):
 
     os.utime(path, (timestamp, timestamp))
 
-def get_messages():
-
-    req='/api_v0/messages?filter=all'
+def get_messages() -> None:
+    """Fetch and save all messages from the Tavern Keeper API."""
+    req = '/api_v0/messages?filter=all'
     messages = pull(req)
 
     for message in messages['messages']:
@@ -107,9 +150,9 @@ def get_messages():
         name = message['name']
         print(f'+++ {name}')
 
-        req=f'/api_v0/messages/{mid}'
+        req = f'/api_v0/messages/{mid}'
         message = pull(req)
-        req=f'/api_v0/messages/{mid}/comments'
+        req = f'/api_v0/messages/{mid}/comments'
         comments = pull(req)
         merge(message, comments)
 
@@ -122,8 +165,8 @@ def get_messages():
         dir = 'messages'
         write(message, dir, name, date)
 
-def get_characters():
-
+def get_characters() -> None:
+    """Fetch and save all characters from the Tavern Keeper API."""
     req = f'/api_v0/users/{uid}/characters'
     characters = pull(req)
 
@@ -148,7 +191,6 @@ def get_characters():
         dir = 'characters'
         write(character, dir, name, date)
 
-
         portrait = character['image_url']
         r = requests.get(portrait, stream=True)
         if r.status_code != 200:
@@ -159,8 +201,8 @@ def get_characters():
         dir = f'{export_dir}/{dir}'
 
         timestamp = date.timestamp()
-        date = date.strftime('%Y%m%d%H%M')
-        path = os.path.join(dir, f'{date}.{filename}.jpg')
+        date_str = date.strftime('%Y%m%d%H%M')
+        path = os.path.join(dir, f'{date_str}.{filename}.jpg')
         print(f'Writing to {path}')
 
         if not os.path.exists(dir):
@@ -172,8 +214,14 @@ def get_characters():
 
         os.utime(path, (timestamp, timestamp))
 
-def get_roleplays(cid, campaign_name):
-
+def get_roleplays(cid: str, campaign_name: str) -> None:
+    """
+    Fetch and save all roleplays for a specific campaign.
+    
+    Args:
+        cid: Campaign ID
+        campaign_name: Name of the campaign
+    """
     req = f'/api_v0/campaigns/{cid}/roleplays'
     roleplays = pull(req)
 
@@ -202,8 +250,14 @@ def get_roleplays(cid, campaign_name):
 
         write(roleplay, dir, name, date)
 
-def get_discussions(cid, campaign_name):
-
+def get_discussions(cid: str, campaign_name: str) -> None:
+    """
+    Fetch and save all discussions for a specific campaign.
+    
+    Args:
+        cid: Campaign ID
+        campaign_name: Name of the campaign
+    """
     req = f'/api_v0/campaigns/{cid}/discussions'
     discussions = pull(req)
 
@@ -226,13 +280,10 @@ def get_discussions(cid, campaign_name):
 
         write(discussion, dir, name, date)
 
-def get_campaigns():
-
+def get_campaigns() -> None:
+    """Fetch and save all campaigns from the Tavern Keeper API."""
     req = f'/api_v0/users/{uid}/campaigns'
     campaigns = pull(req)
-
-    # with open('campaigns.json') as f:
-    #     campaigns = json.load(f)
 
     for campaign in campaigns['campaigns']:
         cid = str(campaign['id'])
@@ -245,10 +296,6 @@ def get_campaigns():
 
         get_roleplays(cid, campaign_name)
         get_discussions(cid, campaign_name)
-
-    # path = 'campaigns.json'
-    # with open(path, 'w') as f:
-    #     json.dump(campaigns, f, indent=2)
 
 def test():
 

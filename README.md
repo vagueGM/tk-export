@@ -1,44 +1,55 @@
 # tk-export
 
-A crude python tool to export user data from
-[Tavern-Keeper](https://www.tavern-keeper.com) before it shuts down.
+A Python 3 tool to export user data from [Tavern-Keeper](https://www.tavern-keeper.com) before it shuts down.
 
-The site author also offers an Elixir version, which includes a little less
-data.
+This is a fork of [vagueGM/tk-export](https://github.com/vagueGM/tk-export), updated to work with Python 3 and modern Python best practices.
+
+The site author also offers an Elixir version, which includes a little less data:
 [https://github.com/bcentinaro/tk-export](https://github.com/bcentinaro/tk-export)
 
-## Brief How to use
+## Installation
 
-- Copy `.env.example` to `.env`.
-- Add your user id number to the `TK_USER_ID=` line in `.env`.
-- Add your cookie to the `TK_COOKIE=` line in `.env`.
+1. Make sure you have Python 3 installed on your system
+   - On macOS, you can install Python 3 using Homebrew: `brew install python`
+2. Clone this repository
+3. Install the required dependencies:
+   ```bash
+   # On macOS/Linux:
+   pip3 install -r requirements.txt
+   
+   # On Windows:
+   pip install -r requirements.txt
+   ```
 
-$ `python tk-export.py`
+## Usage
 
+1. Copy `.env.example` to `.env`
+2. Add your Tavern Keeper credentials to the `.env` file:
+   ```
+   TK_USER_ID=your_user_id
+   TK_COOKIE=your_cookie
+   TK_done_campaigns=optional,comma,separated,list,of,campaign,ids
+   ```
+3. Run the script:
+   ```bash
+   python3 tk-export.py
+   ```
 
-## "Requirement"
+The script will create an `exported-data` directory and save all your Tavern Keeper data there, organized by type (messages, characters, campaigns, etc.).
 
-This uses two common python modules. If you don't have- or don't want them, you
-can edit the script to avoid them.
+## Requirements
 
-The `json` module is purely to pretty print the data.
-If you don't want to install python-json, simply change the single line:
-`json.dump(data, f, indent=2)`
-to
-`f.write(data)`
+This script uses two Python modules:
+- `requests`: For making HTTP requests to the Tavern Keeper API
+- `python-dotenv`: For loading credentials from the `.env` file
 
-The `dotenv` module loads the user id and cookie from a .env file.
-If you don't want to use python-dotenv remove the lines
-`import dotenv`
-`dotenv.load_dotenv()`
-and ensure that `TK_USER_ID` and `TK_COOKIE` are set in your environment.
+These are automatically installed when you run `pip3 install -r requirements.txt` (or `pip install` on Windows).
 
-I don't have an opinion on how you install these modules, package manager, pip,
-pip-env, pipx, ..., use whatever you like.
+## Getting Your Credentials
 
-I am not going to explain how to get your user id and cookie, it varies by
-browser and the web is full of helpful advice and the 'Shutting Down' thread
-had instructions. :)
+To get your Tavern Keeper credentials:
+1. User ID: This is the number in your profile URL
+2. Cookie: You can find this in your browser's developer tools under the "Application" tab, looking for the "tavern-keeper" cookie
 
 ## License
 
