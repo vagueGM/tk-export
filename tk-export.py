@@ -87,13 +87,14 @@ def write(data, dir, name, date):
     timestamp = date.timestamp()
     date = date.strftime('%Y%m%d%H%M')
     path = os.path.join(dir, f'{date}.{filename}.json')
+
     print(f'Writing to {path}')
 
     if not os.path.exists(dir):
         os.makedirs(dir)
 
     with open(path, 'w') as f:
-        f.write(data)
+        json.dump(data, f, indent=2)
 
     os.utime(path, (timestamp, timestamp))
 
@@ -177,19 +178,19 @@ def get_roleplays(cid, campaign_name):
     req = f'/api_v0/campaigns/{cid}/roleplays'
     roleplays = pull(req)
 
-    for roleplay in roleplays['roleplays']:
-        rid = str(roleplay['id'])
-        name = roleplay['name']
+    for roleplay_item in roleplays['roleplays']:
+        rid = str(roleplay_item['id'])
+        name = roleplay_item['name']
         print(f'+++ {name}')
         req = f'/api_v0/roleplays/{rid}'
-        roleplay = pull(req)
+        roleplay_data = pull(req)
 
         req = f'/api_v0/roleplays/{rid}/messages'
         messages = pull(req)
 
-        merge(roleplay, messages)
+        merge(roleplay_data, messages)
 
-        for message in roleplay['messages']:
+        for message in roleplay_data['messages']:
             if message['comment_count'] > 0:
                 mid = str(message['id']) 
                 req = f'/api_v0/roleplays/{rid}/messages/{mid}/comments'
@@ -197,10 +198,10 @@ def get_roleplays(cid, campaign_name):
                 merge(message, comments)
 
         dir = f'campaigns/{campaign_name}/roleplays'
-        date = roleplay['created_at']
+        date = roleplay_data['created_at']
         date = datetime.fromtimestamp(date/1000)
 
-        write(roleplay, dir, name, date)
+        write(roleplay_data, dir, name, date)
 
 def get_discussions(cid, campaign_name):
 
