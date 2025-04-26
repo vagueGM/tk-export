@@ -33,7 +33,10 @@ The site author also offers an Elixir version, which includes a little less data
 1. Install Python 3 from [python.org](https://www.python.org/downloads/)
    - Make sure to check "Add Python to PATH" during installation
 2. Clone this repository
-3. Create and activate a virtual environment:
+      ```bash
+   git clone https://github.com/cschp/tk-export.git
+   ```
+4. Create and activate a virtual environment:
    ```cmd
    # Create a virtual environment
    python -m venv venv
@@ -41,7 +44,7 @@ The site author also offers an Elixir version, which includes a little less data
    # Activate the virtual environment
    .\venv\Scripts\activate
    ```
-4. Install the required dependencies:
+5. Install the required dependencies:
    ```cmd
    pip install -r requirements.txt
    ```
