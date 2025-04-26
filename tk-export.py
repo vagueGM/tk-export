@@ -93,7 +93,7 @@ def write(data, dir, name, date):
         os.makedirs(dir)
 
     with open(path, 'w') as f:
-        json.dump(data, f, indent=2)
+        f.write(data)
 
     os.utime(path, (timestamp, timestamp))
 
