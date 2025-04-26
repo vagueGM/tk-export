@@ -13,7 +13,10 @@ The site author also offers an Elixir version, which includes a little less data
 1. Make sure you have Python 3 installed on your system
    - On macOS, you can install Python 3 using Homebrew: `brew install python`
 2. Clone this repository
-3. Create and activate a virtual environment:
+   ```bash
+   git clone https://github.com/cschp/tk-export
+   ```
+4. Create and activate a virtual environment:
    ```bash
    # Create a virtual environment
    python3 -m venv venv
@@ -21,7 +24,7 @@ The site author also offers an Elixir version, which includes a little less data
    # Activate the virtual environment
    source venv/bin/activate
    ```
-4. Install the required dependencies:
+5. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
    ```
