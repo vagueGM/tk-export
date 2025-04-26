@@ -7,6 +7,8 @@ The site author also offers an Elixir version, which includes a little less
 data.
 [https://github.com/bcentinaro/tk-export](https://github.com/bcentinaro/tk-export)
 
+This repo and scripting is a fork based off of https://github.com/vagueGM/tk-export
+
 ## Installation and Setup
 
 1. Create a Python virtual environment:
