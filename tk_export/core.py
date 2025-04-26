@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import requests
 from datetime import datetime
 from time import sleep
@@ -8,11 +6,11 @@ from sys import exit
 import json
 from typing import Dict, List, Tuple, Optional, Any
 
-export_dir = 'exported-data' ## Saved files end up here. Reletive to script.
-sleep_delay = 0.5 ## seconds between request, to be polite to the site.
+export_dir = 'exported-data'  # Saved files end up here. Relative to script.
+sleep_delay = 0.5  # seconds between request, to be polite to the site.
 
-host='https://www.tavern-keeper.com'
-headers = { 'accept': 'application/json', 'X-CSRF-Token': 'something', }
+host = 'https://www.tavern-keeper.com'
+headers = {'accept': 'application/json', 'X-CSRF-Token': 'something'}
 
 def load_settings() -> Tuple[str, Dict[str, str], Optional[List[str]]]:
     """
@@ -35,7 +33,7 @@ def load_settings() -> Tuple[str, Dict[str, str], Optional[List[str]]]:
     if not cookie_value:
         print("cookie not provided in .env")
         cookie_value = ''
-    cookies = { 'tavern-keeper': cookie_value }
+    cookies = {'tavern-keeper': cookie_value}
 
     if not uid or not cookie_value:
         exit(1)
@@ -44,9 +42,7 @@ def load_settings() -> Tuple[str, Dict[str, str], Optional[List[str]]]:
     if done_campaigns:
         done_campaigns = done_campaigns.split(",")
 
-    return(uid, cookies, done_campaigns)
-
-uid, cookies, done_campaigns = load_settings()
+    return uid, cookies, done_campaigns
 
 def merge(old: Dict[str, Any], new: Dict[str, Any]) -> None:
     """
@@ -73,33 +69,34 @@ def pull(req: str) -> Dict[str, Any]:
         Dictionary containing the API response data
     """
     sleep(sleep_delay)
-    url = host+req
+    url = host + req
     print(f'GET: {url}')
     r = requests.get(url, headers=headers, cookies=cookies)
     if r.status_code != 200:
         print(r.status_code)
-        return({})
+        return {}
 
-    data=r.json()
+    data = r.json()
 
     if ('pages' in data) and data['pages'] > 1:
         params = {}
-        for page in range(2, data['pages']+1):
+        for page in range(2, data['pages'] + 1):
             params['page'] = page
             r = requests.get(url, headers=headers, cookies=cookies, params=params)
             if r.status_code != 200:
                 print(r.status_code, url)
             merge(data, r.json())
 
-    return(data)
+    return data
 
-### Make filenames safer
-transTable = { '&': '+' }
+# Make filenames safer
+transTable = {'&': '+'}
 for bracket in '[{<':
-    transTable.update({ bracket: '(' })
+    transTable.update({bracket: '('})
 for bracket in ']}>':
-    transTable.update({ bracket: ')' })
+    transTable.update({bracket: ')'})
 transTable = str.maketrans(transTable)
+
 def sanitise(name: str) -> str:
     """
     Make filenames safer by replacing special characters.
@@ -295,23 +292,4 @@ def get_campaigns() -> None:
         campaign_name = sanitise(campaign_name)
 
         get_roleplays(cid, campaign_name)
-        get_discussions(cid, campaign_name)
-
-def test():
-
-    req = f'/api_v0/users/{uid}'
-    data = pull(req)
-
-    print(data)
-
-    if 'account' in data:
-        print(f"+ {data['name']} logged in")
-    else:
-        print('+ not logged in')
-        exit(2)
-
-test()
-get_campaigns()
-get_characters()
-get_messages()
-
+        get_discussions(cid, campaign_name) 

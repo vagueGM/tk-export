@@ -9,6 +9,7 @@ The site author also offers an Elixir version, which includes a little less data
 
 ## Installation
 
+### macOS/Linux
 1. Make sure you have Python 3 installed on your system
    - On macOS, you can install Python 3 using Homebrew: `brew install python`
 2. Clone this repository
@@ -18,18 +19,33 @@ The site author also offers an Elixir version, which includes a little less data
    python3 -m venv venv
    
    # Activate the virtual environment
-   # On macOS/Linux:
    source venv/bin/activate
-   # On Windows:
-   .\venv\Scripts\activate
    ```
 4. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
+### Windows
+1. Install Python 3 from [python.org](https://www.python.org/downloads/)
+   - Make sure to check "Add Python to PATH" during installation
+2. Clone this repository
+3. Create and activate a virtual environment:
+   ```cmd
+   # Create a virtual environment
+   python -m venv venv
+   
+   # Activate the virtual environment
+   .\venv\Scripts\activate
+   ```
+4. Install the required dependencies:
+   ```cmd
+   pip install -r requirements.txt
+   ```
+
 ## Usage
 
+### Using the Script Directly
 1. Make sure your virtual environment is activated (you should see `(venv)` at the start of your command prompt)
 2. Copy `.env.example` to `.env`
 3. Add your Tavern Keeper credentials to the `.env` file:
@@ -40,8 +56,24 @@ The site author also offers an Elixir version, which includes a little less data
    ```
 4. Run the script:
    ```bash
+   # On macOS/Linux:
    python3 tk-export.py
+   
+   # On Windows:
+   python tk-export.py
    ```
+
+### Using the Interactive Version
+1. Make sure your virtual environment is activated
+2. Run the interactive script:
+   ```bash
+   # On macOS/Linux:
+   python3 tk-export-interactive.py
+   
+   # On Windows:
+   python tk-export-interactive.py
+   ```
+3. Follow the prompts to enter your credentials
 
 The script will create an `exported-data` directory and save all your Tavern Keeper data there, organized by type (messages, characters, campaigns, etc.).
 
