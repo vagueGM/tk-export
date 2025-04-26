@@ -14,7 +14,7 @@ The site author also offers an Elixir version, which includes a little less data
    - On macOS, you can install Python 3 using Homebrew: `brew install python`
 2. Clone this repository
    ```bash
-   git clone [https://github.com/cschp/tk-export](https://github.com/cschp/tk-export.git)
+   git clone https://github.com/cschp/tk-export.git
    ```
 4. Create and activate a virtual environment:
    ```bash
