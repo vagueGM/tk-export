@@ -305,7 +305,7 @@ def test():
     print(data)
 
     if 'account' in data:
-        print(f'+ {data['name']} logged in')
+        print(f"+ {data['name']} logged in")
     else:
         print('+ not logged in')
         exit(2)
