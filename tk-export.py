@@ -233,11 +233,17 @@ def get_discussions(cid, campaign_name):
 
 def get_campaigns():
 
-    req = f'/api_v0/users/{uid}/campaigns'
-    campaigns = pull(req)
+    if os.path.exists('campaigns.json'):
+        with open('campaigns.json') as f:
+            campaigns = json.load(f)
+    else:
+        req = f'/api_v0/users/{uid}/campaigns'
+        campaigns = pull(req)
 
-    # with open('campaigns.json') as f:
-    #     campaigns = json.load(f)
+    # path = 'campaigns.json'
+    # with open(path, 'w') as f:
+    #     json.dump(campaigns, f, indent=2)
+    # break
 
     for campaign in campaigns['campaigns']:
         cid = str(campaign['id'])
@@ -250,10 +256,6 @@ def get_campaigns():
 
         get_roleplays(cid, campaign_name)
         get_discussions(cid, campaign_name)
-
-    # path = 'campaigns.json'
-    # with open(path, 'w') as f:
-    #     json.dump(campaigns, f, indent=2)
 
 def test():
 
