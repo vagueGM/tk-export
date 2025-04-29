@@ -9,6 +9,7 @@ import json
 
 export_dir = 'exported-data' ## Saved files end up here. Reletive to script.
 sleep_delay = 0.5 ## seconds between request, to be polite to the site.
+dated_names = False ## Prefix filenames with date for sorting
 
 host='https://www.tavern-keeper.com'
 headers = { 'accept': 'application/json', 'X-CSRF-Token': 'something', }
@@ -79,14 +80,17 @@ def sanitise(name):
     name = name.translate(transTable)
     return ''.join([char if char.isalnum() or char in '-_,.!?()"\'…—' else '_' for char in name])
 
-def write(data, dir, name, date):
+def write(data, dir, name, date, dated_names = dated_names):
     filename = sanitise(name)
     dir = f'{export_dir}/{dir}'
-    # dir = sanitise(dir)
 
     timestamp = date.timestamp()
-    date = date.strftime('%Y%m%d%H%M')
-    path = os.path.join(dir, f'{date}.{filename}.json')
+
+    if dated_names:
+        date = date.strftime('%Y%m%d%H%M')
+        filename = f'{date}.{filename}'
+
+    path = os.path.join(dir, f'{filename}.json')
     print(f'Writing to {path}')
 
     if not os.path.exists(dir):
@@ -120,7 +124,8 @@ def get_messages():
         date = datetime.strptime(date, '%Y-%m-%d %I:%M %p')
 
         dir = 'messages'
-        write(message, dir, name, date)
+        
+        write(message, dir, name, date, dated_names = True)
 
 def get_characters():
 
