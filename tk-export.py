@@ -127,6 +127,51 @@ def get_messages():
         
         write(message, dir, name, date, dated_names = True)
 
+def get_character(character, dir):
+
+    cid = str(character['id'])
+    name = character['name']
+    print(f'+++ {name}')
+
+    req = f'/api_v0/characters/{cid}'
+    character = pull(req)
+    if character == {}:
+        return
+
+    date = character['created_at']
+    date = datetime.fromtimestamp(date/1000)
+
+    write(character, dir, name, date)
+
+
+    portrait = character['image_url']
+    if portrait:
+        r = requests.get(portrait, stream=True)
+        if r.status_code != 200:
+            print(r.status_code, 'portrait download failed')
+            return
+
+        filename = sanitise(name)
+        dir = f'{export_dir}/{dir}'
+
+        timestamp = date.timestamp()
+
+        if dated_names:
+            date = date.strftime('%Y%m%d%H%M')
+            filename = f'{date}.{filename}'
+
+        path = os.path.join(dir, f'{filename}.jpg')
+        print(f'Writing to {path}')
+
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        with open(path, 'wb') as f:
+            for chunk in r:
+                f.write(chunk)
+
+        os.utime(path, (timestamp, timestamp))
+
 def get_characters():
 
     req = f'/api_v0/users/{uid}/characters'
@@ -138,44 +183,8 @@ def get_characters():
     merge(characters, archived_characters)
 
     for character in characters['characters']:
-        cid = str(character['id'])
-        name = character['name']
-        print(f'+++ {name}')
-
-        req = f'/api_v0/characters/{cid}'
-        character = pull(req)
-        if character == {}:
-            continue
-
-        date = character['created_at']
-        date = datetime.fromtimestamp(date/1000)
-
         dir = 'characters'
-        write(character, dir, name, date)
-
-
-        portrait = character['image_url']
-        r = requests.get(portrait, stream=True)
-        if r.status_code != 200:
-            print(r.status_code, 'portrait download failed')
-            continue
-
-        filename = sanitise(name)
-        dir = f'{export_dir}/{dir}'
-
-        timestamp = date.timestamp()
-        date = date.strftime('%Y%m%d%H%M')
-        path = os.path.join(dir, f'{date}.{filename}.jpg')
-        print(f'Writing to {path}')
-
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-
-        with open(path, 'wb') as f:
-            for chunk in r:
-                f.write(chunk)
-
-        os.utime(path, (timestamp, timestamp))
+        get_character(character, dir)
 
 def get_roleplays(cid, campaign_name):
 
@@ -254,8 +263,22 @@ def get_campaigns():
         print(f'++ {campaign_name}')
         campaign_name = sanitise(campaign_name)
 
+        dir = f'campaigns/{campaign_name}'
+
+        date = campaign['created_at']
+        date = datetime.fromtimestamp(date/1000)
+
+        name = f'{campaign_name}'
+
+        write(campaign, dir, name, date)
+
         get_roleplays(cid, campaign_name)
         get_discussions(cid, campaign_name)
+
+        req=f"/api_v0/campaigns/{cid}/characters"
+        campaign_characters = pull(req)
+        for character in campaign_characters['characters']:
+            get_character(character, f'{dir}/characters')
 
 def test():
 
